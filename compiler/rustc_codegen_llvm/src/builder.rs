@@ -1122,7 +1122,8 @@ impl BuilderMethods<'a, 'tcx> for Builder<'a, 'll, 'tcx> {
 
     fn invalidate_all_pointers(&mut self, ptr: &'ll Value, size: Size) {
         // FIXME: emit anything??
-        let _ = ptr; let _ = size;
+        let _ = ptr;
+        let _ = size;
     }
 
     fn lifetime_end(&mut self, ptr: &'ll Value, size: Size) {

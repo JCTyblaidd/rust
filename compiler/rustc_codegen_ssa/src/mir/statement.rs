@@ -61,7 +61,7 @@ impl<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>> FunctionCx<'a, 'tcx, Bx> {
             mir::StatementKind::InvalidateBorrows(local) => {
                 if let LocalRef::Place(cg_place) = self.locals[local] {
                     cg_place.invalidate_borrows(&mut bx);
-                }else if let LocalRef::UnsizedPlace(cg_indirect_place) = self.locals[local] {
+                } else if let LocalRef::UnsizedPlace(cg_indirect_place) = self.locals[local] {
                     cg_indirect_place.invalidate_borrows(&mut bx);
                 }
                 bx

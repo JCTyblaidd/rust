@@ -1200,7 +1200,11 @@ impl PlaceContext {
     pub fn is_storage_marker_or_invalidate_borrow(&self) -> bool {
         matches!(
             self,
-            PlaceContext::NonUse(NonUseContext::StorageLive | NonUseContext::StorageDead | NonUseContext::InvalidateBorrows)
+            PlaceContext::NonUse(
+                NonUseContext::StorageLive
+                    | NonUseContext::StorageDead
+                    | NonUseContext::InvalidateBorrows
+            )
         )
     }
 

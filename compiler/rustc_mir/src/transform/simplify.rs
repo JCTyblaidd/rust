@@ -508,9 +508,7 @@ impl<'a, 'tcx> MutVisitor<'tcx> for RemoveStatements<'a, 'tcx> {
             let keep = match &stmt.kind {
                 StatementKind::StorageLive(l)
                 | StatementKind::InvalidateBorrows(l)
-                | StatementKind::StorageDead(l) => {
-                    self.keep_local(*l)
-                }
+                | StatementKind::StorageDead(l) => self.keep_local(*l),
                 StatementKind::Assign(box (place, _)) => self.keep_local(place.local),
                 _ => true,
             };

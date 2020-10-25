@@ -134,7 +134,7 @@ impl<'mir, 'tcx> dataflow::GenKillAnalysis<'tcx> for MaybeRequiresStorage<'mir, 
             // Invalidating borrows and pointers does not
             //  necessarily remove the requirement for
             //  storage.
-            StatementKind::InvalidateBorrows(_l) => {},
+            StatementKind::InvalidateBorrows(_l) => {}
 
             // If a place is assigned to in a statement, it needs storage for that statement.
             StatementKind::Assign(box (place, _))

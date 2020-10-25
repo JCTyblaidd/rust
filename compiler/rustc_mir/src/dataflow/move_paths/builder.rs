@@ -306,12 +306,10 @@ impl<'b, 'a, 'tcx> Gatherer<'b, 'a, 'tcx> {
                 }
             }
             StatementKind::StorageLive(_) => {}
-            StatementKind::InvalidateBorrows(_) => {
-                span_bug!(
-                    stmt.source_info.span,
-                    "InvalidateBorrows should not exist during borrowck"
-                )
-            }
+            StatementKind::InvalidateBorrows(_) => span_bug!(
+                stmt.source_info.span,
+                "InvalidateBorrows should not exist during borrowck"
+            ),
             StatementKind::StorageDead(local) => {
                 self.gather_move(Place::from(*local));
             }
