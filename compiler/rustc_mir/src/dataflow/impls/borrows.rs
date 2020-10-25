@@ -282,9 +282,10 @@ impl<'tcx> dataflow::GenKillAnalysis<'tcx> for Borrows<'_, 'tcx> {
                 self.kill_borrows_on_place(trans, lhs);
             }
 
-            mir::StatementKind::StorageDead(local) => {
+            mir::StatementKind::InvalidateBorrows(local)
+            | mir::StatementKind::StorageDead(local) => {
                 // Make sure there are no remaining borrows for locals that
-                // are gone out of scope.
+                // are gone out of scope, or are invalidated.
                 self.kill_borrows_on_place(trans, Place::from(local));
             }
 

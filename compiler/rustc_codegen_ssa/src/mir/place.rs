@@ -414,6 +414,10 @@ impl<'a, 'tcx, V: CodegenObject> PlaceRef<'tcx, V> {
         bx.lifetime_start(self.llval, self.layout.size);
     }
 
+    pub fn invalidate_borrows<Bx: BuilderMethods<'a, 'tcx, Value = V>>(&self, bx: &mut Bx) {
+        bx.invalidate_all_pointers(self.llval, self.layout.size);
+    }
+
     pub fn storage_dead<Bx: BuilderMethods<'a, 'tcx, Value = V>>(&self, bx: &mut Bx) {
         bx.lifetime_end(self.llval, self.layout.size);
     }

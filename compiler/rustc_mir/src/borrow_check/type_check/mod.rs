@@ -1513,6 +1513,7 @@ impl<'a, 'tcx> TypeChecker<'a, 'tcx> {
             }
             StatementKind::FakeRead(..)
             | StatementKind::StorageLive(..)
+            | StatementKind::InvalidateBorrows(..)
             | StatementKind::StorageDead(..)
             | StatementKind::LlvmInlineAsm { .. }
             | StatementKind::Retag { .. }

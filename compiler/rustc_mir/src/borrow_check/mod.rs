@@ -647,6 +647,9 @@ impl<'cx, 'tcx> dataflow::ResultsVisitor<'cx, 'tcx> for MirBorrowckCtxt<'cx, 'tc
                 // `Nop`, `AscribeUserType`, `Retag`, and `StorageLive` are irrelevant
                 // to borrow check.
             }
+            StatementKind::InvalidateBorrows(local) => {
+                bug!("InvalidateBorrows({:?}) in borrow check", local)
+            }
             StatementKind::StorageDead(local) => {
                 self.access_place(
                     location,

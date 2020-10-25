@@ -93,6 +93,9 @@ where
             PlaceContext::NonUse(NonUseContext::StorageDead)
             | PlaceContext::NonMutatingUse(NonMutatingUseContext::Move) => self.trans.kill(local),
 
+            // Borrows may be invalidated, but the local will remain potentially initialized.
+            PlaceContext::NonUse(NonUseContext::InvalidateBorrows) => {},
+
             // All other uses do not affect this analysis.
             PlaceContext::NonUse(
                 NonUseContext::StorageLive

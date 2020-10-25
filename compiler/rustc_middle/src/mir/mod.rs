@@ -1459,6 +1459,9 @@ pub enum StatementKind<'tcx> {
     /// Start a live range for the storage of the local.
     StorageLive(Local),
 
+    /// Invalidate all current borrows of a local
+    InvalidateBorrows(Local),
+
     /// End the current live range for the storage of the local.
     StorageDead(Local),
 
@@ -1587,6 +1590,7 @@ impl Debug for Statement<'_> {
                 place,
             ),
             StorageLive(ref place) => write!(fmt, "StorageLive({:?})", place),
+            InvalidateBorrows(ref place) => write!(fmt, "InvalidateBorrows({:?}", place),
             StorageDead(ref place) => write!(fmt, "StorageDead({:?})", place),
             SetDiscriminant { ref place, variant_index } => {
                 write!(fmt, "discriminant({:?}) = {:?}", place, variant_index)

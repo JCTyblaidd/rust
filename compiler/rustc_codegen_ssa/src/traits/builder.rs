@@ -273,6 +273,9 @@ pub trait BuilderMethods<'a, 'tcx>:
     /// Called for `StorageLive`
     fn lifetime_start(&mut self, ptr: Self::Value, size: Size);
 
+    /// Called for `InvalidateBorrows`
+    fn invalidate_all_pointers(&mut self, ptr: Self::Value, size: Size);
+
     /// Called for `StorageDead`
     fn lifetime_end(&mut self, ptr: Self::Value, size: Size);
 

@@ -131,6 +131,11 @@ impl<'mir, 'tcx> dataflow::GenKillAnalysis<'tcx> for MaybeRequiresStorage<'mir, 
         match &stmt.kind {
             StatementKind::StorageDead(l) => trans.kill(*l),
 
+            // Invalidating borrows and pointers does not
+            //  necessarily remove the requirement for
+            //  storage.
+            StatementKind::InvalidateBorrows(_l) => {},
+
             // If a place is assigned to in a statement, it needs storage for that statement.
             StatementKind::Assign(box (place, _))
             | StatementKind::SetDiscriminant { box place, .. } => {

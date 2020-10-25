@@ -29,8 +29,11 @@ pub fn categorize(context: PlaceContext) -> Option<DefUse> {
         PlaceContext::MutatingUse(MutatingUseContext::Yield) |
 
         // Storage live and storage dead aren't proper defines, but we can ignore
-        // values that come before them.
+        // values that come before them; they are also not generated but the old
+        // usage is kept, InvalidateBorrows is also not a proper define but it
+        // invalidates and existing borrows, so we can ignore values that come before.
         PlaceContext::NonUse(NonUseContext::StorageLive) |
+        PlaceContext::NonUse(NonUseContext::InvalidateBorrows) |
         PlaceContext::NonUse(NonUseContext::StorageDead) => Some(DefUse::Def),
 
         ///////////////////////////////////////////////////////////////////////////

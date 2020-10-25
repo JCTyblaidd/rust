@@ -366,6 +366,13 @@ macro_rules! make_mir_visitor {
                             location
                         );
                     }
+                    StatementKind::InvalidateBorrows(local) => {
+                        self.visit_local(
+                            local,
+                            PlaceContext::NonUse(NonUseContext::InvalidateBorrows),
+                            location
+                        )
+                    }
                     StatementKind::StorageDead(local) => {
                         self.visit_local(
                             local,
@@ -1145,6 +1152,8 @@ pub enum MutatingUseContext {
 pub enum NonUseContext {
     /// Starting a storage live range.
     StorageLive,
+    /// Invalidate live borrows
+    InvalidateBorrows,
     /// Ending a storage live range.
     StorageDead,
     /// User type annotation assertions for NLL.
@@ -1183,6 +1192,15 @@ impl PlaceContext {
         matches!(
             self,
             PlaceContext::NonUse(NonUseContext::StorageLive | NonUseContext::StorageDead)
+        )
+    }
+
+    /// Returns `true` is this place context represents a storage live or storage dead marker,
+    ///  or it represents an `InvalidateBorrows` marker
+    pub fn is_storage_marker_or_invalidate_borrow(&self) -> bool {
+        matches!(
+            self,
+            PlaceContext::NonUse(NonUseContext::StorageLive | NonUseContext::StorageDead | NonUseContext::InvalidateBorrows)
         )
     }
 

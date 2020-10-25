@@ -100,6 +100,9 @@ impl<'cx, 'tcx> Visitor<'tcx> for InvalidationGenerator<'cx, 'tcx> {
                 // `Nop`, `AscribeUserType`, `Retag`, and `StorageLive` are irrelevant
                 // to borrow check.
             }
+            StatementKind::InvalidateBorrows(local) => {
+                bug!("InvalidateBorrows({:?}) in borrow check", local)
+            }
             StatementKind::StorageDead(local) => {
                 self.access_place(
                     location,

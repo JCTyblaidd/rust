@@ -400,7 +400,7 @@ impl<'a, 'tcx> Visitor<'tcx> for DeclMarker<'a, 'tcx> {
         // Ignore storage markers altogether, they get removed along with their otherwise unused
         // decls.
         // FIXME: Extend this to all non-uses.
-        if ctx.is_storage_marker() {
+        if ctx.is_storage_marker_or_invalidate_borrow() {
             return;
         }
 
@@ -506,7 +506,9 @@ impl<'a, 'tcx> MutVisitor<'tcx> for RemoveStatements<'a, 'tcx> {
         let mut i = 0usize;
         data.statements.retain(|stmt| {
             let keep = match &stmt.kind {
-                StatementKind::StorageLive(l) | StatementKind::StorageDead(l) => {
+                StatementKind::StorageLive(l)
+                | StatementKind::InvalidateBorrows(l)
+                | StatementKind::StorageDead(l) => {
                     self.keep_local(*l)
                 }
                 StatementKind::Assign(box (place, _)) => self.keep_local(place.local),

@@ -1120,6 +1120,11 @@ impl BuilderMethods<'a, 'tcx> for Builder<'a, 'll, 'tcx> {
         self.call_lifetime_intrinsic("llvm.lifetime.start.p0i8", ptr, size);
     }
 
+    fn invalidate_all_pointers(&mut self, ptr: &'ll Value, size: Size) {
+        // FIXME: emit anything??
+        let _ = ptr; let _ = size;
+    }
+
     fn lifetime_end(&mut self, ptr: &'ll Value, size: Size) {
         self.call_lifetime_intrinsic("llvm.lifetime.end.p0i8", ptr, size);
     }

@@ -99,6 +99,11 @@ impl<'mir, 'tcx: 'mir, M: Machine<'mir, 'tcx>> InterpCx<'mir, 'tcx, M> {
                 self.deallocate_local(old_val)?;
             }
 
+            // Invalidate all current borrows
+            InvalidateBorrows(local) => {
+                bug!("InvalidateBorrows({:?}) in const eval", local)
+            }
+
             // Mark locals as dead
             StorageDead(local) => {
                 let old_val = self.storage_dead(*local);

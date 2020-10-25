@@ -36,6 +36,7 @@ pub mod multiple_return_terminators;
 pub mod no_landing_pads;
 pub mod nrvo;
 pub mod promote_consts;
+pub mod remove_lifetimes;
 pub mod remove_noop_landing_pads;
 pub mod remove_unneeded_drops;
 pub mod required_consts;
