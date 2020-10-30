@@ -21,7 +21,7 @@ use rustc_target::abi::VariantIdx;
 use polonius_engine::Atom;
 pub use rustc_ast::Mutability;
 use rustc_data_structures::fx::FxHashSet;
-use rustc_data_structures::graph::dominators::{dominators, Dominators};
+use rustc_data_structures::graph::dominators::{dominators, post_dominators, Dominators};
 use rustc_data_structures::graph::{self, GraphSuccessors};
 use rustc_index::bit_set::BitMatrix;
 use rustc_index::vec::{Idx, IndexVec};
@@ -480,6 +480,11 @@ impl<'tcx> Body<'tcx> {
     #[inline]
     pub fn dominators(&self) -> Dominators<BasicBlock> {
         dominators(self)
+    }
+
+    #[inline]
+    pub fn post_dominators(&self) -> Dominators<BasicBlock> {
+        post_dominators(self)
     }
 }
 
@@ -1459,6 +1464,10 @@ pub enum StatementKind<'tcx> {
     /// Start a live range for the storage of the local.
     StorageLive(Local),
 
+    /// Mark the local as uninitialized, and hence invalidating
+    ///  any data the local may have contained
+    MarkUninitialized(Local),
+
     /// Invalidate all current borrows of a local
     InvalidateBorrows(Local),
 
@@ -1590,6 +1599,7 @@ impl Debug for Statement<'_> {
                 place,
             ),
             StorageLive(ref place) => write!(fmt, "StorageLive({:?})", place),
+            MarkUninitialized(ref place) => write!(fmt, "MarkUnitialized({:?})", place),
             InvalidateBorrows(ref place) => write!(fmt, "InvalidateBorrows({:?}", place),
             StorageDead(ref place) => write!(fmt, "StorageDead({:?})", place),
             SetDiscriminant { ref place, variant_index } => {

@@ -273,7 +273,9 @@ impl<'mir, 'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>> Visitor<'tcx>
                 self.assign(local, location);
             }
 
-            PlaceContext::NonUse(_) | PlaceContext::MutatingUse(MutatingUseContext::Retag) => {}
+            PlaceContext::NonUse(_) | PlaceContext::MutatingUse(
+                MutatingUseContext::Retag | MutatingUseContext::MarkUninit
+            ) => {}
 
             PlaceContext::NonMutatingUse(
                 NonMutatingUseContext::Copy | NonMutatingUseContext::Move,

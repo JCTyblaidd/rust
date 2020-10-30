@@ -100,6 +100,9 @@ impl<'cx, 'tcx> Visitor<'tcx> for InvalidationGenerator<'cx, 'tcx> {
                 // `Nop`, `AscribeUserType`, `Retag`, and `StorageLive` are irrelevant
                 // to borrow check.
             }
+            StatementKind::MarkUninitialized(local) => {
+                bug!("MarkUninitialized({:?}) in borrow check", local)
+            }
             StatementKind::InvalidateBorrows(local) => {
                 bug!("InvalidateBorrows({:?}) in borrow check", local)
             }

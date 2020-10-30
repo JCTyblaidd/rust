@@ -220,6 +220,7 @@ fn check_statement(tcx: TyCtxt<'tcx>, body: &Body<'tcx>, def_id: DefId, statemen
 
         // These are all NOPs
         StatementKind::StorageLive(_)
+        | StatementKind::MarkUninitialized(_)
         | StatementKind::InvalidateBorrows(_)
         | StatementKind::StorageDead(_)
         | StatementKind::Retag { .. }

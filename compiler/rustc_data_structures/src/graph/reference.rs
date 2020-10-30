@@ -28,6 +28,17 @@ impl<'graph, G: WithPredecessors> WithPredecessors for &'graph G {
     }
 }
 
+impl<'graph, G: WithNodes> WithNodes for &'graph G {
+    fn nodes(&self) -> <Self as GraphNodes<'_>>::Iter {
+        (**self).nodes()
+    }
+}
+
+impl<'iter, 'graph, G: WithNodes> GraphNodes<'graph> for &'graph G {
+    type Item = G::Node;
+    type Iter = <G as GraphNodes<'iter>>::Iter;
+}
+
 impl<'iter, 'graph, G: WithPredecessors> GraphPredecessors<'iter> for &'graph G {
     type Item = G::Node;
     type Iter = <G as GraphPredecessors<'iter>>::Iter;

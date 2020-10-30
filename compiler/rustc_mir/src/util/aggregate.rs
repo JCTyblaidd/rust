@@ -10,6 +10,7 @@ use std::iter::TrustedLen;
 ///
 /// Produces something like
 ///
+/// MarkUninitialized(lhs)              //complete assignment, so consider Uninitialized before aggregate
 /// (lhs as Variant).field0 = arg0;     // We only have a downcast if this is an enum
 /// (lhs as Variant).field1 = arg1;
 /// discriminant(lhs) = variant_index;  // If lhs is an enum or generator.
@@ -19,7 +20,7 @@ pub fn expand_aggregate<'tcx>(
     kind: AggregateKind<'tcx>,
     source_info: SourceInfo,
     tcx: TyCtxt<'tcx>,
-) -> impl Iterator<Item = Statement<'tcx>> + TrustedLen {
+) -> impl Iterator<Item = Statement<'tcx>> + TrustedLen { //FIXME: emit MarkUninitialized.
     let mut set_discriminant = None;
     let active_field_index = match kind {
         AggregateKind::Adt(adt_def, variant_index, _, _, active_field_index) => {

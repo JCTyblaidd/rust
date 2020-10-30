@@ -1012,6 +1012,9 @@ impl<'tcx> Visitor<'tcx> for CanConstProp {
             | NonMutatingUse(NonMutatingUseContext::Projection)
             | NonUse(_) => {}
 
+            //FIXME: const prop `MarkUninitialized`,
+            MutatingUse(MutatingUseContext::MarkUninit) => {}
+
             // These could be propagated with a smarter analysis or just some careful thinking about
             // whether they'd be fine right now.
             MutatingUse(MutatingUseContext::AsmOutput)

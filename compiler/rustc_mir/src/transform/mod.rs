@@ -14,6 +14,7 @@ use rustc_span::{Span, Symbol};
 use std::borrow::Cow;
 
 pub mod add_call_guards;
+pub mod add_lifetimes;
 pub mod add_moves_for_packed_drops;
 pub mod add_retag;
 pub mod check_const_item_mutation;

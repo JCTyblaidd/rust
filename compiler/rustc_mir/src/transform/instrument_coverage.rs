@@ -1089,6 +1089,7 @@ fn filtered_statement_span(statement: &'a Statement<'tcx>, body_span: Span) -> O
         // These statements have spans that are often outside the scope of the executed source code
         // for their parent `BasicBlock`.
         StatementKind::StorageLive(_)
+        | StatementKind::MarkUninitialized(_)
         | StatementKind::InvalidateBorrows(_)
         | StatementKind::StorageDead(_)
         // Coverage should not be encountered, but don't inject coverage coverage

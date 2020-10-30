@@ -135,6 +135,10 @@ impl<'mir, 'tcx> dataflow::GenKillAnalysis<'tcx> for MaybeRequiresStorage<'mir, 
             //  necessarily remove the requirement for
             //  storage.
             StatementKind::InvalidateBorrows(_l) => {}
+            
+            // Might still require storage, even though no data is currently
+            //  stored. FIXME: exact desired semantics
+            StatementKind::MarkUninitialized(_l) => {}
 
             // If a place is assigned to in a statement, it needs storage for that statement.
             StatementKind::Assign(box (place, _))

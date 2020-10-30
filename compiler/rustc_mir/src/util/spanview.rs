@@ -240,6 +240,7 @@ pub fn statement_kind_name(statement: &Statement<'_>) -> &'static str {
         FakeRead(..) => "FakeRead",
         SetDiscriminant { .. } => "SetDiscriminant",
         StorageLive(..) => "StorageLive",
+        MarkUninitialized(..) => "MarkUninitialized",
         InvalidateBorrows(..) => "InvalidateBorrows",
         StorageDead(..) => "StorageDead",
         LlvmInlineAsm(..) => "LlvmInlineAsm",

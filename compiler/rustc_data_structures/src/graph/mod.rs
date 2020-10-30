@@ -4,6 +4,7 @@ pub mod dominators;
 pub mod implementation;
 pub mod iterate;
 mod reference;
+pub mod transpose;
 pub mod scc;
 pub mod vec_graph;
 
@@ -22,11 +23,29 @@ pub trait WithNumEdges: DirectedGraph {
     fn num_edges(&self) -> usize;
 }
 
+
+pub trait WithNodes: DirectedGraph + WithNumNodes
+where
+    Self: for<'graph> GraphNodes<'graph, Item = <Self as DirectedGraph>::Node>,
+{
+    fn nodes(&self) -> <Self as GraphNodes<'_>>::Iter;
+}
+
+#[allow(unused_lifetimes)]
+pub trait GraphNodes<'graph> {
+    type Item;
+    type Iter: Iterator<Item = Self::Item>;
+}
+
 pub trait WithSuccessors: DirectedGraph
 where
     Self: for<'graph> GraphSuccessors<'graph, Item = <Self as DirectedGraph>::Node>,
 {
     fn successors(&self, node: Self::Node) -> <Self as GraphSuccessors<'_>>::Iter;
+
+    fn has_sucessors(&self, node: Self::Node) -> bool {
+        self.successors(node).next().is_some()
+    }
 
     fn depth_first_search(&self, from: Self::Node) -> iterate::DepthFirstSearch<'_, Self>
     where
@@ -47,6 +66,10 @@ where
     Self: for<'graph> GraphPredecessors<'graph, Item = <Self as DirectedGraph>::Node>,
 {
     fn predecessors(&self, node: Self::Node) -> <Self as GraphPredecessors<'_>>::Iter;
+
+    fn has_predecessors(&self, node: Self::Node) -> bool {
+        self.predecessors(node).next().is_some()
+    }
 }
 
 #[allow(unused_lifetimes)]

@@ -36,6 +36,7 @@ impl RemoveNoopLandingPads {
             match &stmt.kind {
                 StatementKind::FakeRead(..)
                 | StatementKind::StorageLive(_)
+                | StatementKind::MarkUninitialized(_)
                 | StatementKind::InvalidateBorrows(_)
                 | StatementKind::StorageDead(_)
                 | StatementKind::AscribeUserType(..)

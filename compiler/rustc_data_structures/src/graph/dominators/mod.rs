@@ -5,8 +5,9 @@
 //! Rice Computer Science TS-06-33870,
 //! <https://www.cs.rice.edu/~keith/EMBED/dom.pdf>.
 
-use super::iterate::reverse_post_order;
-use super::ControlFlowGraph;
+use super::iterate::{reverse_post_order, graph_reverse_post_order};
+use super::{ControlFlowGraph, WithNodes, WithPredecessors, WithSuccessors};
+use super::transpose::TranposeGraph;
 use rustc_index::vec::{Idx, IndexVec};
 use std::borrow::BorrowMut;
 use std::cmp::Ordering;
@@ -14,29 +15,53 @@ use std::cmp::Ordering;
 #[cfg(test)]
 mod tests;
 
+pub fn post_dominators<G: WithNodes + WithPredecessors + WithSuccessors>(graph: G) -> Dominators<G::Node> {
+    graph_dominators(TranposeGraph(graph))
+}
+
+pub fn graph_dominators<G: WithNodes + WithPredecessors + WithSuccessors>(graph: G) -> Dominators<G::Node> {
+    let rpo = graph_reverse_post_order(&graph);
+    dominators_given_rpo(
+        graph, &rpo, 
+        |graph, immediate_dominators| {
+            for node in graph.nodes() {
+                if !graph.has_predecessors(node) {
+                    immediate_dominators[node] = Some(node);    
+                }
+            }
+        }
+    );
+}
+
 pub fn dominators<G: ControlFlowGraph>(graph: G) -> Dominators<G::Node> {
     let start_node = graph.start_node();
     let rpo = reverse_post_order(&graph, start_node);
-    dominators_given_rpo(graph, &rpo)
+    assert_eq!(rpo[0], start_node);
+    dominators_given_rpo(
+        graph, &rpo, 
+        |graph, immediate_dominators| {
+            let start_node = graph.start_node();
+            immediate_dominators[start_node] = Some(start_node);
+        }
+    )
 }
 
-fn dominators_given_rpo<G: ControlFlowGraph + BorrowMut<G>>(
+fn dominators_given_rpo<G: WithPredecessors + WithNodes>(
     mut graph: G,
     rpo: &[G::Node],
+    mark_start_nodes: impl FnOnce(&G, &mut IndexVec<G::Node, Option<G::Node>>)
 ) -> Dominators<G::Node> {
-    let start_node = graph.borrow().start_node();
-    assert_eq!(rpo[0], start_node);
 
     // compute the post order index (rank) for each node
     let mut post_order_rank: IndexVec<G::Node, usize> =
-        (0..graph.borrow().num_nodes()).map(|_| 0).collect();
+        (0..graph.num_nodes()).map(|_| 0).collect();
     for (index, node) in rpo.iter().rev().cloned().enumerate() {
         post_order_rank[node] = index;
     }
 
     let mut immediate_dominators: IndexVec<G::Node, Option<G::Node>> =
-        (0..graph.borrow().num_nodes()).map(|_| None).collect();
-    immediate_dominators[start_node] = Some(start_node);
+        (0..graph.num_nodes()).map(|_| None).collect();
+    mark_start_nodes(&graph, &mut immediate_dominators);
 
     let mut changed = true;
     while changed {
@@ -44,7 +69,7 @@ fn dominators_given_rpo<G: ControlFlowGraph + BorrowMut<G>>(
 
         for &node in &rpo[1..] {
             let mut new_idom = None;
-            for pred in graph.borrow_mut().predecessors(node) {
+            for pred in graph.predecessors(node) {
                 if immediate_dominators[pred].is_some() {
                     // (*) dominators for `pred` have been calculated
                     new_idom = Some(if let Some(new_idom) = new_idom {
@@ -108,6 +133,12 @@ impl<Node: Idx> Dominators<Node> {
     pub fn is_dominated_by(&self, node: Node, dom: Node) -> bool {
         // FIXME -- could be optimized by using post-order-rank
         self.dominators(node).any(|n| n == dom)
+    }
+
+    pub fn intersect_dominator(&self, lhs: Node, rhs: Node) -> Node {
+        assert!(self.is_reachable(lhs), "node {:?} is not reachable", lhs);
+        assert!(self.is_reachable(rhs), "node {:?} is not reachable", rhs);
+        intersect(&self.post_order_rank,&self.immediate_dominators, lhs, rhs)
     }
 
     /// Provide deterministic ordering of nodes such that, if any two nodes have a dominator

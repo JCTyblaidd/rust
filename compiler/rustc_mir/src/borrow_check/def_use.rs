@@ -27,6 +27,7 @@ pub fn categorize(context: PlaceContext) -> Option<DefUse> {
         // path and not the unwind path. -nmatsakis
         PlaceContext::MutatingUse(MutatingUseContext::Call) |
         PlaceContext::MutatingUse(MutatingUseContext::Yield) |
+        PlaceContext::MutatingUse(MutatingUseContext::MarkUninit) |
 
         // Storage live and storage dead aren't proper defines, but we can ignore
         // values that come before them; they are also not generated but the old

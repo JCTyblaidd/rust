@@ -58,6 +58,9 @@ impl<'a, 'tcx, Bx: BuilderMethods<'a, 'tcx>> FunctionCx<'a, 'tcx, Bx> {
                 }
                 bx
             }
+            mir::StatementKind::MarkUninitialized(_local) => {
+                bx
+            }
             mir::StatementKind::InvalidateBorrows(local) => {
                 if let LocalRef::Place(cg_place) = self.locals[local] {
                     cg_place.invalidate_borrows(&mut bx);

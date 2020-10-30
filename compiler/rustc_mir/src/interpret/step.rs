@@ -100,6 +100,9 @@ impl<'mir, 'tcx: 'mir, M: Machine<'mir, 'tcx>> InterpCx<'mir, 'tcx, M> {
             }
 
             // Invalidate all current borrows
+            MarkUninitialized(local) => bug!("InvalidateBorrows({:?}) in const eval", local),
+
+            // Invalidate all current borrows
             InvalidateBorrows(local) => bug!("InvalidateBorrows({:?}) in const eval", local),
 
             // Mark locals as dead

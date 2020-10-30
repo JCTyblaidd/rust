@@ -1,18 +1,46 @@
-use super::{DirectedGraph, WithNumNodes, WithStartNode, WithSuccessors};
+use super::{DirectedGraph, WithNumNodes, WithNodes, WithStartNode, WithSuccessors, WithPredecessors};
 use rustc_index::bit_set::BitSet;
 use rustc_index::vec::IndexVec;
 
 #[cfg(test)]
 mod tests;
 
-pub fn post_order_from<G: DirectedGraph + WithSuccessors + WithNumNodes>(
+// Find the next node that has not been visited, will try find
+//  nodes with no start-node, returning any non-visited node otherwise
+fn find_next_start_node<G: WithNodes + WithPredecessors>(
+    graph: &G, visited: &IndexVec<G::Node, bool>
+) -> Option<G::Node> {
+    let mut final_res = None;
+    for (node, visit) in visited.iter_enumerated() {
+        if !*visit {
+            if !graph.has_predecessors(node) {
+                return Some(node)
+            }else{
+                final_res = Some(node)
+            }
+        }
+    }
+    final_res
+}
+
+pub fn graph_post_order<G: WithSuccessors + WithPredecessors + WithNodes>(
+    graph: &G
+) -> Vec<G::Node> {
+    let mut visited: IndexVec<G::Node, bool> = IndexVec::from_elem_n(false, graph.num_nodes());
+    let mut result: Vec<G::Node> = Vec::with_capacity(graph.num_nodes());
+    while let Some(start) = find_next_start_node(graph, visited) {
+        post_order_walk(graph, start, &mut result, &mut visited);
+    }
+}
+
+pub fn post_order_from<G: WithSuccessors + WithNumNodes>(
     graph: &G,
     start_node: G::Node,
 ) -> Vec<G::Node> {
     post_order_from_to(graph, start_node, None)
 }
 
-pub fn post_order_from_to<G: DirectedGraph + WithSuccessors + WithNumNodes>(
+pub fn post_order_from_to<G: WithSuccessors + WithNumNodes>(
     graph: &G,
     start_node: G::Node,
     end_node: Option<G::Node>,
@@ -42,6 +70,14 @@ fn post_order_walk<G: DirectedGraph + WithSuccessors + WithNumNodes>(
     }
 
     result.push(node);
+}
+
+pub fn graph_reverse_post_order<G: WithSuccessors + WithPredecessors + WithNodes>(
+    graph: &G
+) -> Vec<G::Node> {
+    let mut vec = graph_post_order(graph);
+    vec.reverse();
+    vec
 }
 
 pub fn reverse_post_order<G: DirectedGraph + WithSuccessors + WithNumNodes>(

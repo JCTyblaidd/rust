@@ -300,6 +300,7 @@ impl<'tcx> dataflow::GenKillAnalysis<'tcx> for Borrows<'_, 'tcx> {
             mir::StatementKind::FakeRead(..)
             | mir::StatementKind::SetDiscriminant { .. }
             | mir::StatementKind::StorageLive(..)
+            | mir::StatementKind::MarkUninitialized(..)
             | mir::StatementKind::Retag { .. }
             | mir::StatementKind::AscribeUserType(..)
             | mir::StatementKind::Coverage(..)

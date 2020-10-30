@@ -577,6 +577,7 @@ impl Conflicts<'a> {
 
             StatementKind::SetDiscriminant { .. }
             | StatementKind::StorageLive(..)
+            | StatementKind::MarkUninitialized(..)
             | StatementKind::InvalidateBorrows(..)
             | StatementKind::StorageDead(..)
             | StatementKind::Retag(..)

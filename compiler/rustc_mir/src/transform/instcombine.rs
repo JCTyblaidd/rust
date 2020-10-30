@@ -184,6 +184,7 @@ impl OptimizationFinder<'b, 'tcx> {
                     | rustc_middle::mir::StatementKind::Nop
                     | rustc_middle::mir::StatementKind::FakeRead(_, _)
                     | rustc_middle::mir::StatementKind::StorageLive(_)
+                    | rustc_middle::mir::StatementKind::MarkUninitialized(_)
                     | rustc_middle::mir::StatementKind::InvalidateBorrows(_)
                     | rustc_middle::mir::StatementKind::StorageDead(_)
                     | rustc_middle::mir::StatementKind::Retag(_, _)

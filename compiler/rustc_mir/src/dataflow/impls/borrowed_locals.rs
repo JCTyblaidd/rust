@@ -147,8 +147,12 @@ where
 
         // When we reach a `StorageDead` statement, we can assume that any pointers to this memory
         // are now invalid.
-        if let StatementKind::StorageDead(local) = stmt.kind {
-            self.trans.kill(local);
+        match &stmt.kind {
+            StatementKind::StorageDead(local) |
+            StatementKind::InvalidateBorrows(local) => {
+                self.trans.kill(local)
+            }
+            _ => {}
         }
     }
 

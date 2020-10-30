@@ -1,13 +1,14 @@
-//! Find and remove any and all `StorageDead` and `StorageLive` statements,
-//!  all `StorageLive` statements are replaced with no-ops
-//!  all `StorageDead` statements are replaced with `InvalidateBorrows`
+//! Remove and replace lifetime markers with alternatives
+//!  that can be placed multiple times, for efficient MIR opt.
+//! Converts `StorageLive` to `MakeUnitialized`
+//!      and `StorageDead` to `InvalidateBorrows`
 
 use crate::transform::MirPass;
 use rustc_middle::mir::visit::MutVisitor;
 use rustc_middle::mir::*;
 use rustc_middle::ty::TyCtxt;
 
-/// Remove all lifetime markers and replace them all with `InvalidateBorrows`
+/// Remove `StorageDead` markers,
 pub struct RemoveLifetimes;
 
 impl<'tcx> MirPass<'tcx> for RemoveLifetimes {
@@ -26,13 +27,13 @@ impl<'tcx> MutVisitor<'tcx> for LifetimeRemoveVisitor<'tcx> {
     }
     fn visit_statement(&mut self, statement: &mut Statement<'tcx>, _location: Location) {
         match &statement.kind {
-            StatementKind::StorageLive(_) => {
-                statement.make_nop();
-            }
+            StatementKind::StorageLive(local) => {
+                statement.kind = StatementKind::MarkUninitialized(*local);
+            },
             StatementKind::StorageDead(local) => {
                 statement.kind = StatementKind::InvalidateBorrows(*local);
-            }
-            _ => (),
+            },
+            _ => {}
         }
     }
 }

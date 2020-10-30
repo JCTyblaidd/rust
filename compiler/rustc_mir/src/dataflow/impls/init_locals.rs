@@ -85,20 +85,19 @@ where
             // These are handled specially in `call_return_effect` and `yield_resume_effect`.
             PlaceContext::MutatingUse(MutatingUseContext::Call | MutatingUseContext::Yield) => {}
 
-            // Otherwise, when a place is mutated, we must consider it possibly initialized.
-            PlaceContext::MutatingUse(_) => self.trans.gen(local),
-
-            // If the local is moved out of, or if it gets marked `StorageDead`, consider it no
-            // longer initialized.
+            // If the local is moved out of, if it gets marked `StorageDead` or if it
+            //  gets marked as unitialized, consider it no longer initialized .
             PlaceContext::NonUse(NonUseContext::StorageDead)
+            | PlaceContext::MutatingUse(MutatingUseContext::MarkUninit)
             | PlaceContext::NonMutatingUse(NonMutatingUseContext::Move) => self.trans.kill(local),
 
-            // Borrows may be invalidated, but the local will remain potentially initialized.
-            PlaceContext::NonUse(NonUseContext::InvalidateBorrows) => {}
+            // Otherwise, when a place is mutated, we must consider it possibly initialized.
+            PlaceContext::MutatingUse(_) => self.trans.gen(local),
 
             // All other uses do not affect this analysis.
             PlaceContext::NonUse(
                 NonUseContext::StorageLive
+                | NonUseContext::InvalidateBorrows
                 | NonUseContext::AscribeUserTy
                 | NonUseContext::VarDebugInfo,
             )

@@ -723,6 +723,7 @@ impl Visitor<'tcx> for Validator<'mir, 'tcx> {
 
             StatementKind::FakeRead(..)
             | StatementKind::StorageLive(_)
+            | StatementKind::MarkUninitialized(_)
             | StatementKind::InvalidateBorrows(_)
             | StatementKind::StorageDead(_)
             | StatementKind::Retag { .. }

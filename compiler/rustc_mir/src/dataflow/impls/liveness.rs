@@ -130,7 +130,9 @@ impl DefUse {
         match context {
             PlaceContext::NonUse(_) => None,
 
-            PlaceContext::MutatingUse(MutatingUseContext::Store) => Some(DefUse::Def),
+            PlaceContext::MutatingUse(
+                MutatingUseContext::Store | MutatingUseContext::MarkUninit
+            ) => Some(DefUse::Def),
 
             // `MutatingUseContext::Call` and `MutatingUseContext::Yield` indicate that this is the
             // destination place for a `Call` return or `Yield` resume respectively. Since this is

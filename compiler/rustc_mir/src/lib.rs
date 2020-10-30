@@ -27,6 +27,8 @@ Rust MIR: a lowered representation of Rust.
 #![feature(option_expect_none)]
 #![feature(or_patterns)]
 #![feature(once_cell)]
+#![feature(fn_traits)]
+#![feature(unboxed_closures)]
 #![recursion_limit = "256"]
 
 #[macro_use]

@@ -366,6 +366,13 @@ macro_rules! make_mir_visitor {
                             location
                         );
                     }
+                    StatementKind::MarkUninitialized(local) => {
+                        self.visit_local(
+                            local,
+                            PlaceContext::MutatingUse(MutatingUseContext::MarkUninit),
+                            location
+                        )
+                    }
                     StatementKind::InvalidateBorrows(local) => {
                         self.visit_local(
                             local,
@@ -1123,6 +1130,8 @@ pub enum NonMutatingUseContext {
 pub enum MutatingUseContext {
     /// Appears as LHS of an assignment.
     Store,
+    /// Mark the local as uniitialized
+    MarkUninit,
     /// Can often be treated as a `Store`, but needs to be separate because
     /// ASM is allowed to read outputs as well, so a `Store`-`AsmOutput` sequence
     /// cannot be simplified the way a `Store`-`Store` can be.
